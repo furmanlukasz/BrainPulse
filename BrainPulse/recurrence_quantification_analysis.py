@@ -1,6 +1,13 @@
 from numba import jit
 import numpy as np
-
+from pyrqa.computation import RPComputation, RQAComputation
+from pyrqa.time_series import TimeSeries, EmbeddedSeries
+from pyrqa.settings import Settings
+from pyrqa.analysis_type import Classic
+from pyrqa.metric import EuclideanMetric
+# from pyrqa.metric import Sigmoid
+# from pyrqa.metric import Cosine
+from pyrqa.neighbourhood import Unthresholded,FixedRadius
 
 def get_results(recurrence_matrix,
                 minimum_diagonal_line_length,
@@ -277,3 +284,18 @@ def trapping_time(number_of_vertical_lines_points_, number_of_vertical_lines_):
     Trapping time (TT).
     """
     return np.float32(number_of_vertical_lines_points_ / number_of_vertical_lines_)
+
+
+
+
+def return_pyRQA_results(signal, nbr):
+    time_series = EmbeddedSeries(signal)
+    settings = Settings(time_series,
+                        analysis_type=Classic,
+                        neighbourhood=FixedRadius(nbr),
+                        similarity_measure=EuclideanMetric,
+                        theiler_corrector=1)
+    computation = RQAComputation.create(settings,
+                                        verbose=True)
+    result = computation.run()
+    return result
