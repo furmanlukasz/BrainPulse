@@ -9,6 +9,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.svm import SVC
 from sklearn.model_selection import StratifiedKFold
 from sklearn.feature_selection import RFECV
+from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 
 import rcr
@@ -35,12 +36,27 @@ def exclude_subject(df,exluded_subjects):
 
 def electrode_wise_dataframe(df, condition_list, id_vars = ['Subject', 'Task', 'Electrode']):
     stats_frame = df[
-        ['Subject', 'Task', 'Electrode','Lentr', 'TT', 'L', 'RR', 'LAM', 'DET', 'V', 'Ventr', 'W','Wentr']
+        ['Subject', 'Task', 'Electrode','Lentr', 'TT', 'L', 'RR', 'LAM', 'DET', 'V','Vmax', 'Ventr', 'W','Wentr']
     ]
 
     stats_frame.melt(id_vars=id_vars, var_name='RQA_feature', value_name='feature_value')
     stats = stats_frame.pivot_table(index=['Subject', 'Task'], columns='Electrode',
-                                     values=['Lentr', 'TT', 'L', 'RR', 'LAM', 'DET', 'V', 'Ventr', 'W', 'Wentr']).reset_index()
+                                     values=['Lentr', 'TT', 'L', 'RR', 'LAM', 'DET', 'V','Vmax', 'Ventr', 'W', 'Wentr']).reset_index()
+
+    stats = stats.replace(condition_list[0], 0)
+    stats = stats.replace(condition_list[1], 1)
+    y = stats.Task.values
+    return stats, y
+
+
+def electrode_wise_dataframe_epochs(df, condition_list, id_vars = ['Subject', 'Task', 'Epoch_id','Electrode']):
+    stats_frame = df[
+        ['Subject', 'Task','Epoch_id','Electrode','Lentr', 'TT', 'L', 'RR', 'LAM', 'DET', 'V','Vmax', 'Ventr', 'W','Wentr']
+    ]
+
+    stats_frame.melt(id_vars=id_vars, var_name='RQA_feature', value_name='feature_value')
+    stats = stats_frame.pivot_table(index=['Subject', 'Task'], columns=['Electrode', 'Epoch_id'],
+                                    values=['Lentr', 'TT', 'L', 'RR', 'LAM', 'DET', 'V','Vmax', 'Ventr', 'W', 'Wentr']).reset_index()
 
     stats = stats.replace(condition_list[0], 0)
     stats = stats.replace(condition_list[1], 1)
@@ -90,14 +106,14 @@ def select_features_clean_and_normalize(df,features=['Lentr', 'TT', 'L', 'LAM', 
     return stats_data_normed
 
 
-def clasyfication_SVM(df,y,cv=10):
+def clasyfication_SVM(df,y,cv=10,type='linear'):
 
 
-    clf=svm.SVC(kernel='linear')
+    clf=svm.SVC(kernel=type)
     skf = StratifiedKFold(n_splits=cv)
     # run split() again to generate folds
     folds = skf.split(df, y)
-
+    print('folds shape ', folds)
     performance = np.zeros(skf.n_splits)
     performance_open= np.zeros(skf.n_splits)
     performance_closed= np.zeros(skf.n_splits)
@@ -110,11 +126,11 @@ def clasyfication_SVM(df,y,cv=10):
         X_test = df[test_idx,:]
         y_test = y[test_idx]
 
-        # ToDo: call fit (on train) and predict (on test)
+        # call fit (on train) and predict (on test)
         model = clf.fit(X=X_train, y=y_train)
         y_hat = model.predict(X=X_test)
 
-        # ToDo: calculate accuracy
+        # calculate accuracy
         performance[i] = accuracy_score(y_test, y_hat)
         cm = confusion_matrix(y_test, y_hat)
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
@@ -123,24 +139,24 @@ def clasyfication_SVM(df,y,cv=10):
         performance_open[i]=class_acuracy[0]*100
         performance_closed[i]=class_acuracy[1]*100
 
-    # ToDo: calculate average accuracy
+    # calculate average accuracy
     print('Mean performance: %.3f' % np.mean(performance*100))
-    print('Mean performance open: %.3f' % np.mean(performance_open))
-    print('Mean performance closed: %.3f' % np.mean(performance_closed))
+    print('Mean performance 1st class: %.3f' % np.mean(performance_open))
+    print('Mean performance 2nd class: %.3f' % np.mean(performance_closed))
 
 
-    lin = svm.SVC(kernel='linear').fit(X_train, y_train)
+    lin = svm.SVC(kernel=type).fit(X_train, y_train)
     lin_pred = lin.predict(X_test)
 
     return lin, lin_pred
 
-def cross_validation(df,y,cv=10,title = 'cv job'):
+def cross_validation(df,y,cv=10,title = 'cv job',type='linear'):
 
     # Create the RFE object and compute a cross-validated score.
-    svc = SVC(kernel="linear")
+    svc = SVC(kernel=type)
     # The "accuracy" scoring shows the proportion of correct classifications
 
-    min_features_to_select = 1  # Minimum number of features to consider
+    min_features_to_select = 4  # Minimum number of features to consider
     rfecv = RFECV(
         estimator=svc,
         step=1,
@@ -169,7 +185,7 @@ def cross_validation(df,y,cv=10,title = 'cv job'):
 
 
 
-def compute_binary_SVM(df,y,predict_on_all_data = False):
+def compute_binary_SVM(df,y,predict_on_all_data = False,type='linear'):
 
     # stats_data = df[['TT', 'RR', 'DET', 'LAM', 'L', 'Lentr']].values
     X_train, X_test, y_train, y_test = model_selection.train_test_split(df, y, train_size=0.80, test_size=0.20,
@@ -178,7 +194,7 @@ def compute_binary_SVM(df,y,predict_on_all_data = False):
 
     if predict_on_all_data:
         print('SVM prediction on all data')
-        lin = svm.SVC(kernel='linear').fit(X_train, y_train)
+        lin = svm.SVC(kernel=type).fit(X_train, y_train)
 
         lin_pred = lin.predict(df)
 
@@ -189,29 +205,74 @@ def compute_binary_SVM(df,y,predict_on_all_data = False):
         cm = confusion_matrix(y, lin_pred)
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         class_acuracy = cm.diagonal()
-        print('Accuracy (open): ', "%.2f" % (class_acuracy[0] * 100))
-        print('Accuracy (close): ', "%.2f" % (class_acuracy[1] * 100))
+        print('Accuracy (1st class): ', "%.2f" % (class_acuracy[0] * 100))
+        print('Accuracy (2nd class): ', "%.2f" % (class_acuracy[1] * 100))
     else:
         print('SVM prediction on test data')
-        lin = svm.SVC(kernel='linear').fit(X_train, y_train)
+        lin = svm.SVC(kernel=type).fit(X_train, y_train)
 
         lin_pred = lin.predict(X_test)
 
         lin_accuracy = accuracy_score(y_test, lin_pred)
 
         print('Accuracy (Linear Kernel): ', "%.2f" % (lin_accuracy * 100))
+        print('Y train:', y_train)
+        print('Y test:', y_test)
+        print('Y pred:', lin_pred)
 
         cm = confusion_matrix(y_test, lin_pred)
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         class_acuracy = cm.diagonal()
-        print('Accuracy (open): ', "%.2f" % (class_acuracy[0] * 100))
-        print('Accuracy (close): ', "%.2f" % (class_acuracy[1] * 100))
+        print('Accuracy (1st class): ', "%.2f" % (class_acuracy[0] * 100))
+        print('Accuracy (2nd class): ', "%.2f" % (class_acuracy[1] * 100))
 
     return lin, lin_pred
 
 
 
+def clasyfication_RFC(df,y,cv=10,max_depth=2):
 
+    clf = RandomForestClassifier(max_depth=max_depth, random_state=0)
+    skf = StratifiedKFold(n_splits=cv)
+    # run split() again to generate folds
+    folds = skf.split(df, y)
+
+    performance = np.zeros(skf.n_splits)
+    performance_open= np.zeros(skf.n_splits)
+    performance_closed= np.zeros(skf.n_splits)
+
+    for i, (train_idx, test_idx) in enumerate(folds):
+
+        X_train = df[train_idx,:]
+        y_train = y[train_idx]
+
+        X_test = df[test_idx,:]
+        y_test = y[test_idx]
+
+        # call fit (on train) and predict (on test)
+        model = clf.fit(X=X_train, y=y_train)
+        y_hat = model.predict(X=X_test)
+
+        # calculate accuracy
+        performance[i] = accuracy_score(y_test, y_hat)
+        cm = confusion_matrix(y_test, y_hat)
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        # class_acuracy = cm.diagonal()
+        class_acuracy = cm.diagonal()
+        performance_open[i]=class_acuracy[0]*100
+        performance_closed[i]=class_acuracy[1]*100
+
+    # calculate average accuracy
+    print('Mean performance: %.3f' % np.mean(performance*100))
+    print('Mean performance 1st class: %.3f' % np.mean(performance_open))
+    print('Mean performance 2nd class: %.3f' % np.mean(performance_closed))
+
+
+    lin = RandomForestClassifier(max_depth=max_depth, random_state=0)
+    lin.fit(X=X_train, y=y_train)
+    lin_pred = lin.predict(X_test)
+
+    return lin, lin_pred
 
 
 

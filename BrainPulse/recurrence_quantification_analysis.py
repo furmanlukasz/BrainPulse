@@ -283,7 +283,11 @@ def trapping_time(number_of_vertical_lines_points_, number_of_vertical_lines_):
     """
     Trapping time (TT).
     """
-    return np.float32(number_of_vertical_lines_points_ / number_of_vertical_lines_)
+    try:
+        return np.float32(number_of_vertical_lines_points_ / number_of_vertical_lines_)
+    except:
+        return 0
+
 
 
 

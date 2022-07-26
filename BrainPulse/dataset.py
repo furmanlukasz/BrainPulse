@@ -83,3 +83,67 @@ def eegMCI_data(stim_type, subject, run_type, path_to_data_folder):
     raw = [raw_no_targets,raw_targets]
     print(electrodes_l)
     return EpochsArray(epochs,info,tmin=-0.2), np.array(raw)
+
+
+
+
+def eegMCI_data_epochs(stim_type1,stim_type2, subject, run_type, path_to_data_folder):
+    """
+    eegMCI_data does read 3d data from .mat file structured as ( n epochs, n channels, n samples ).
+
+    :param stim_type1:  'AV','A','V'
+    :param stim_type2:  'AV','A','V'
+    :param subject: select a subject from dataset
+    :param run_type: chose run type of selected subject, possible types ( button.dat, test.dat_1, test.dat_2, train.dat )
+    :param path_to_data_folder: root path to data folder
+
+    :return: epochs, raw mne objects
+    """
+
+    stim_type_long = ['audiovisual','audio','visual']
+
+    if stim_type1 == 'AV':
+        stim_typeL1 = stim_type_long[0]
+    elif stim_type1 == 'A':
+        stim_typeL1 = stim_type_long[1]
+    else:
+        stim_typeL1 = stim_type_long[2]
+
+    if stim_type2 == 'AV':
+        stim_typeL2 = stim_type_long[0]
+    elif stim_type2 == 'A':
+        stim_typeL2 = stim_type_long[1]
+    else:
+        stim_typeL2 = stim_type_long[2]
+
+    targets = ['allNTARGETS','allTARGETS']
+    path1 = os.path.join(path_to_data_folder,stim_typeL1,'s'+str(subject)+'_'+stim_type1+'_'+run_type+'.mat')
+    path2 = os.path.join(path_to_data_folder,stim_typeL2,'s'+str(subject)+'_'+stim_type2+'_'+run_type+'.mat')
+
+    mat1 = scipy.io.loadmat(path1)
+    mat2 = scipy.io.loadmat(path2)
+
+    raw_no_targets1 = mat1[targets[0]].transpose((0, 2, 1))
+    raw_targets1 = mat1[targets[1]].transpose((0, 2, 1))
+
+    raw_no_targets2 = mat2[targets[0]].transpose((0, 2, 1))
+    raw_targets2 = mat2[targets[1]].transpose((0, 2, 1))
+
+    electrodes_l = np.concatenate(mat1['electrodes'])
+    electrodes_l = [str(x).replace('[','').replace(']','').replace("'",'') for x in electrodes_l]
+    ch_types = ['eeg'] * 16
+    info = create_info(electrodes_l, ch_types=ch_types, sfreq=512)
+    info.set_montage('standard_1020')
+
+    # epochs_no_target = EpochsArray(raw_no_targets1, info, tmin=-0.2)
+    epochs_target1 = EpochsArray(raw_targets1, info, tmin=-0.2, baseline=(-0.2,0))
+    epochs_target2 = EpochsArray(raw_targets2, info, tmin=-0.2, baseline=(-0.2,0))
+
+    # erp_no_target = epochs_no_target.average()
+    erp_target1 = epochs_target1.average()
+    erp_target2 = epochs_target2.average()
+
+    evoked = np.array([erp_target1.get_data(),erp_target2.get_data()],dtype=np.object)
+    epochs = [epochs_target1,epochs_target2]
+    print(electrodes_l)
+    return EpochsArray(evoked,info,tmin=-0.2), epochs
