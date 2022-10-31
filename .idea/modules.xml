@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/BrainPulse_Project.iml" filepath="$PROJECT_DIR$/.idea/BrainPulse_Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/BrainPulse.iml" filepath="$PROJECT_DIR$/.idea/BrainPulse.iml" />
     </modules>
   </component>
 </project>
