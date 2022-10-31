@@ -8,7 +8,7 @@ import seaborn as sns
 import umap
 import umap.plot
 import pandas as pd
-from BrainPulse.event import EventSegment
+from .event import EventSegment
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import QuantileTransformer
@@ -16,9 +16,9 @@ from IPython.display import HTML, Audio, Video, Javascript
 sns.set_style("whitegrid")
 
 # plt.rcParams["font.family"] = "cursive"
-plt.rcParams.update({'font.sans-serif':'Times'})
+# plt.rcParams.update({'font.sans-serif':'Times'})
 # plt.rcParams.update({'font.family':'sans-serif'})
-plt.rcParams['font.size'] = 14
+# plt.rcParams['font.size'] = 14
 import matplotlib.font_manager as font_manager
 font = font_manager.FontProperties(family='Times')
 
