@@ -15,9 +15,16 @@ from sklearn.preprocessing import QuantileTransformer
 from IPython.display import HTML, Audio, Video, Javascript
 sns.set_style("whitegrid")
 
+# plt.rcParams["font.family"] = "cursive"
+plt.rcParams.update({'font.sans-serif':'Times'})
+# plt.rcParams.update({'font.family':'sans-serif'})
+plt.rcParams['font.size'] = 14
+import matplotlib.font_manager as font_manager
+font = font_manager.FontProperties(family='Times')
+
 def explainer_(chan, stft, cut_freq, s_rate):
 
-    fig, axs = plt.subplots(4, figsize=(10, 14), dpi=200)  # figsize=(12, 12),
+    fig, axs = plt.subplots(4, figsize=(10, 14), dpi=150)  # figsize=(12, 12),
     time_crop = np.linspace(0, int(chan[:400].shape[0]), chan[:400].shape[0])
 
     axs[0].plot(chan[:400],'k')  # np.linspace(0, int(chan[:400].shape[0]/s_rate), chan[:400].shape[0]),
@@ -33,65 +40,65 @@ def explainer_(chan, stft, cut_freq, s_rate):
     axs[0].annotate('$fft_{1}$', xy=(.25, 72), xycoords='data',
                 xytext=(0.05, 1.45), textcoords='axes fraction',
                 arrowprops=dict(arrowstyle="->",facecolor='black',color='black'),
-                horizontalalignment='right', verticalalignment='top', fontsize=12
+                horizontalalignment='right', verticalalignment='top',
                 )
 
     axs[0].annotate('$fft_{2}$', xy=(23.35, 85), xycoords='data',
                     xytext=(0.15, 1.45), textcoords='axes fraction',
                     arrowprops=dict(arrowstyle="->",facecolor='black',color='black'),
-                    horizontalalignment='right', verticalalignment='top', fontsize=12
+                    horizontalalignment='right', verticalalignment='top',
                     )
 
     axs[0].annotate('$fft_{3}$', xy=(43.45, 95), xycoords='data',
                     xytext=(0.25, 1.45), textcoords='axes fraction',
                     arrowprops=dict(arrowstyle="->",facecolor='black ',color='black'),
-                    horizontalalignment='right', verticalalignment='top', fontsize=12
+                    horizontalalignment='right', verticalalignment='top',
                     )
     axs[0].xaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, chan[:400].shape[0], 5)))
     axs[0].set_xticklabels(
         [str(np.round(x, 1)) for x in np.linspace(0, int(chan[:400].shape[0] / s_rate), axs[0].get_xticks().shape[0])])
-    axs[0].set_ylabel('Amplitude (µV)', fontsize=12)
-    axs[0].set_xlabel('Time (s)', fontsize=12)
-    axs[0].set_title('(a)', fontsize=12)
+    axs[0].set_ylabel('Amplitude (µV)', )
+    axs[0].set_xlabel('Time (s)', )
+    axs[0].set_title('(a)', )
     axs[0].xaxis.grid()
     axs[0].yaxis.grid()
 
 
     axs[1].plot((stft[100]/stft.shape[1])**2, 'red',label='$fft_{1}$',marker="o",markersize=3)
-    axs[1].legend()
+    axs[1].legend(prop=font)
     axs[1].xaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[1], 9)))
     axs[1].set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, cut_freq, 9)])
     axs[1].set_xlim([0, 100])
     # axs[1].set_ylim([0, 250])
-    axs[1].set_ylabel('Power ($\mu V^{2}$)', fontsize=12)
-    axs[1].set_xlabel('Freq (Hz)', fontsize=12)
+    axs[1].set_ylabel('Power ($\mu V^{2}$)', )
+    axs[1].set_xlabel('Freq (Hz)', )
     # axs[1].set_title('Frequency Domain ($fft_{1}$, $fft_{2}$, $fft_{3}$)', fontsize=10)
-    axs[1].set_title('(b)', fontsize=12)
+    axs[1].set_title('(b)', )
     axs[1].xaxis.grid()
     axs[1].yaxis.grid()
 
 
     axs[2].plot((stft[115]/stft.shape[1])**2, 'green', label='$fft_{2}$', marker="o", markersize=3)
-    axs[2].legend()
+    axs[2].legend(prop=font)
     axs[2].xaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[1], 9)))
     axs[2].set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, cut_freq, 9)])
     axs[2].set_xlim([0, 100])
     # axs[2].set_ylim([0, 250])
-    axs[2].set_ylabel('Power ($\mu V^{2}$)', fontsize=12)
-    axs[2].set_xlabel('Freq (Hz)', fontsize=12)
-    axs[2].set_title('(c)', fontsize=12)
+    axs[2].set_ylabel('Power ($\mu V^{2}$)', )
+    axs[2].set_xlabel('Freq (Hz)', )
+    axs[2].set_title('(c)', )
     axs[2].xaxis.grid()
     axs[2].yaxis.grid()
 
 
     axs[3].plot((stft[140]/stft.shape[1])**2, 'blue', label='$fft_{3}$', marker="o", markersize=3)
-    axs[3].legend()
+    axs[3].legend(prop=font)
     axs[3].xaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[1], 9)))
     axs[3].set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, cut_freq, 9)])
     axs[3].set_xlim([0, 100])
-    axs[3].set_ylabel('Power ($\mu V^{2}$)', fontsize=12)
-    axs[3].set_xlabel('Freq (Hz)', fontsize=12)
-    axs[3].set_title('(d)', fontsize=12)
+    axs[3].set_ylabel('Power ($\mu V^{2}$)', )
+    axs[3].set_xlabel('Freq (Hz)', )
+    axs[3].set_title('(d)', )
     axs[3].xaxis.grid()
     axs[3].yaxis.grid()
 
@@ -101,20 +108,31 @@ def explainer_(chan, stft, cut_freq, s_rate):
     plt.savefig('fig_4.png')
 
 
-def stft_collections(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_args):
-    fig = plt.figure(figsize=(12, 12), dpi=200)
-    grid = plt.GridSpec(6, 7, hspace=0.0, wspace=3.5)
+def stft_collections(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_args, max_indx = None, min_indx = None):
+    fig = plt.figure(figsize=(14, 12), dpi=150)
+    grid = plt.GridSpec(6, 8, hspace=0.0, wspace=3.5)
     spectrogram = fig.add_subplot(grid[0:3, 0:4])
     rp_plot = fig.add_subplot(grid[0:3, 4:])
     fft_vector = fig.add_subplot(grid[4:, :])
 
-    max_array = np.max(stft, axis=1)
-    max_value_stft = np.max(max_array, axis=0)
-    max_index =  list(max_array).index(max_value_stft)
+    if max_indx != None and min_indx != None:
+        max_index = max_indx
+        min_index = min_indx
+    else:
+        max_array = np.max(stft, axis=1)
+        max_value_stft = np.max(max_array, axis=0)
+        max_index =  list(max_array).index(max_value_stft)
 
-    min_array = np.min(stft, axis=1)
-    min_value_stft = np.min(min_array, axis=0)
-    min_index = list(min_array).index(min_value_stft)
+        min_array = np.min(stft, axis=1)
+        min_value_stft = np.min(min_array, axis=0)
+        min_index = list(min_array).index(min_value_stft)
+
+
+
+    # ręczne ustawienie wskaźników
+    # max_index = int(1.52*s_rate)
+    # min_index = int(2.4*s_rate)
+
 
     # top = np.triu(matrix)
     # bottom = np.tril(matrix_binary)
@@ -132,20 +150,25 @@ def stft_collections(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_a
         [str(np.round(x, 1)) for x in np.linspace(0, matrix.shape[0] / s_rate, rp_plot.get_xticks().shape[0])])
     rp_plot.set_yticklabels(
         [str(np.round(x, 1)) for x in np.linspace(0, matrix.shape[0] / s_rate, rp_plot.get_yticks().shape[0])])
-    rp_plot.set_xlabel('Time (s)', fontsize=12)
-    rp_plot.set_ylabel('Time (s)', fontsize=12)
-    rp_plot.set_title('(b) Recurrence Plot', fontsize=12)
+    rp_plot.set_xlabel('Time (s)', )
+    rp_plot.set_ylabel('Time (s)', )
+    rp_plot.set_title('(b) Recurrence Plot', )
+    rp_plot.xaxis.grid()
+    rp_plot.yaxis.grid()
 
-    spectrogram.pcolormesh(stft.T) #,vmax=max_value_stft
+    spectrogram.pcolormesh(stft.T,cmap='viridis') #,vmax=max_value_stft
     spectrogram.plot(max_index,2,'orange', marker="|", markersize=40)
     spectrogram.plot(min_index,2,'red', marker="|", markersize=40)
-    # spectrogram.xaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[0], 6)))
-    # spectrogram.set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, stft.shape[0] / s_rate, spectrogram.get_xticks().shape[0])])
-    # spectrogram.yaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[1], 5)))
-    # spectrogram.set_yticklabels([str(np.round(x, 1)) for x in np.linspace(0, cut_freq, 5)])
-    spectrogram.set_ylabel('Freq (Hz)', fontsize=12)
-    spectrogram.set_xlabel('Time (s)', fontsize=12)
-    spectrogram.set_title('(a) Spectrogram', fontsize=12)
+
+    spectrogram.xaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[0], 5)))
+    spectrogram.set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, stft.shape[0] / s_rate, spectrogram.get_xticks().shape[0])])
+    spectrogram.yaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[1], 5)))
+    spectrogram.set_yticklabels([str(np.round(x, 1)) for x in np.linspace(0, cut_freq, 5)])
+    spectrogram.set_ylabel('Freq (Hz)', )
+    spectrogram.set_xlabel('Time (s)', )
+    spectrogram.set_title('(a) Spectrogram', )
+    # spectrogram.xaxis.grid()
+    # spectrogram.yaxis.grid()
     # fig.colorbar(im1, cax=spectrogram, orientation='vertical')
 
 
@@ -156,14 +179,16 @@ def stft_collections(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_a
     fft_vector.xaxis.set_major_locator(matplotlib.ticker.FixedLocator(np.linspace(0, stft.shape[1], 9)))
     fft_vector.set_xticklabels([str(np.round(x, 1)) for x in np.linspace(0, cut_freq, 9)])
     fft_vector.set_xlim([0,100])
-    fft_vector.set_ylabel('Power ($\mu V^{2}$)', fontsize=12)
-    fft_vector.set_xlabel('Freq (Hz)', fontsize=12)
-    fft_vector.set_title('(c) Frequency Domain', fontsize=12)
-    fft_vector.legend()
+    fft_vector.set_ylabel('Power ($\mu V^{2}$)', )
+    fft_vector.set_xlabel('Freq (Hz)', )
+    fft_vector.set_title('(c) Frequency Domain', )
+    fft_vector.legend(prop=font)
+    fft_vector.xaxis.grid()
+    fft_vector.yaxis.grid()
 
-    plt.suptitle( 'Condition: '+ task  + '\n' + 'epsilon {},  FFT window size {} '.format(
-                 str(info_args['eps']), str(info_args['win_len'])) + '\n'
-                 + 'Subject {}, electrode {}, n_fft {}'.format(str(info_args['selected_subject']),str(info_args['electrode_name']),str(info_args['n_fft'])), fontsize=12 ,ha='left',va='top')
+    # plt.suptitle( 'Condition: '+ task  + '\n' + 'epsilon {},  FFT window size {} '.format(
+    #              str(info_args['eps']), str(info_args['win_len'])) + '\n'
+    #              + 'Subject {}, electrode {}, n_fft {}'.format(str(info_args['selected_subject']),str(info_args['electrode_name']),str(info_args['n_fft'])), fontsize=12 ,ha='left',va='top')
     plt.tight_layout()
     plt.savefig('fig_5.png')
     # axs[0].imshow(matrix_binary, cmap='cividis', origin='lower') #interpolation='none'
@@ -212,7 +237,7 @@ def diagnostic(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_args):
     axs[0].set_yticklabels([str(np.round(x, 1)) for x in np.linspace(0, matrix.shape[0] / s_rate, axs[0].get_yticks().shape[0])])
     axs[0].set_xlabel('Time (s)')
     axs[0].set_ylabel('Time (s)')
-    axs[0].set_title('Recurrence Plot', fontsize=10)
+    axs[0].set_title('Recurrence Plot', )
 
 
     # np.linspace(0, stft.shape[1], stft.shape[1]),        np.linspace(0, stft.shape[0], cut_freq),
@@ -227,7 +252,7 @@ def diagnostic(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_args):
     axs[1].set_yticklabels([str(np.round(x, 1)) for x in np.linspace(0, cut_freq, 5)])
     axs[1].set_ylabel('Freq (Hz)')
     axs[1].set_xlabel('Time (s)')
-    axs[1].set_title('Spectrogram', fontsize=10)
+    axs[1].set_title('Spectrogram', )
 
     max_index_ = stft[max_index]/stft.shape[1]
     min_index_ = stft[min_index]/stft.shape[1]
@@ -238,12 +263,12 @@ def diagnostic(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_args):
     axs[2].set_xlim([0,100])
     axs[2].set_ylabel('Power (µV^2)')
     axs[2].set_xlabel('Freq (Hz)')
-    axs[2].set_title('Frequency Domain', size=10)
+    axs[2].set_title('Frequency Domain',)
 
     plt.suptitle( 'Condition: '+ task  + '\n' + 'epsilon {},  FFT window size {} '.format(
                  str(info_args['eps']), str(info_args['win_len'])) + '\n'
                  + 'Subject {}, electrode {}, n_fft {}'.format(str(info_args['selected_subject']),str(info_args['electrode_name']),str(info_args['n_fft'])),
-                 fontsize=8,ha='left',va='top')
+                 ha='left',va='top')
     plt.tight_layout()
 
 def RecurrencePlot(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_args):
@@ -278,7 +303,7 @@ def RecurrencePlot(matrix, matrix_binary, s_rate, stft, cut_freq, task, info_arg
     axs.set_yticklabels([str(np.round(x, 1)) for x in np.linspace(0, matrix.shape[0] / s_rate, axs.get_yticks().shape[0])])
     axs.set_xlabel('Time (s)')
     axs.set_ylabel('Time (s)')
-    axs.set_title('Recurrence Plot', fontsize=10)
+    axs.set_title('Recurrence Plot')
 
 
     # np.linspace(0, stft.shape[1], stft.shape[1]),        np.linspace(0, stft.shape[0], cut_freq),
@@ -300,7 +325,7 @@ def features_hists(df, features_list, condition, dpi = 200):
     fig.tight_layout()
 
 def features_per_subjects_violin(df, features_list, condition, dpi = 200):
-    fig, axs = plt.subplots(len(features_list),figsize=(9, len(features_list)*2), dpi=dpi,sharex='col')
+    fig, axs = plt.subplots(len(features_list),figsize=(14, len(features_list)*2), dpi=dpi,sharex='col')
 
     for i,ax in enumerate(axs):
         sns.violinplot(data=df, x=df.Subject, y=features_list[i], hue=condition, ax=ax, split=True,linewidth=0.2)
@@ -310,10 +335,10 @@ def features_per_subjects_violin(df, features_list, condition, dpi = 200):
     # axs.set_ylim([0,1])
 
 
-    plt.tick_params(axis='x', which='major', labelsize=6)
+    plt.tick_params(axis='x', which='major', labelsize=16)
     fig.tight_layout()
 
-def umap_on_condition(df,y, title,features_list=['TT', 'RR', 'DET', 'LAM', 'L', 'Lentr'], random_state = 70, n_neighbors = 15, min_dist = 0.25, metric = "hamming", df_type=True):
+def umap_on_condition(df,y, title,labels_name,features_list=['TT', 'RR', 'DET', 'LAM', 'L', 'Lentr'], random_state = 70, n_neighbors = 15, min_dist = 0.25, metric = "hamming", df_type=True):
 
 
     fig, ax1 = plt.subplots(figsize=(8, 8), dpi=150)
@@ -330,13 +355,13 @@ def umap_on_condition(df,y, title,features_list=['TT', 'RR', 'DET', 'LAM', 'L', 
     # Fit UMAP to processed data
     manifold = umap.UMAP(random_state=random_state, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit(X, y)
     # X_reduced_2 = manifold.transform(X)
-    umap.plot.points(manifold, labels=y, ax=ax1, color_key=np.array(
+    umap.plot.points(manifold, labels=labels_name, ax=ax1, color_key=np.array(
         [(0, 0.35, 0.73), (1, 0.83, 0)]))  # ,color_key=np.array([(1,0.83,0),(0,0.35,0.73)])
-    ax1.set_title(title+' Condition 0 - open eyes, 1 - closed eyes  ')
+    ax1.set_title(title)
 
 def umap_side_by_side_plot(df1, df2, features_list=['TT', 'RR', 'DET', 'LAM', 'L', 'Lentr'], random_state = 70, n_neighbors = 15, min_dist = 0.25, metric = "hamming"):
 
-    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2,figsize=(16,8),dpi=200)
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2,figsize=(16,8),dpi=150)
 
     stats_data = df1[features_list].values
     y = df1.Task.values
@@ -370,7 +395,7 @@ def umap_side_by_side_plot(df1, df2, features_list=['TT', 'RR', 'DET', 'LAM', 'L
 
 def SVM_histogram(df, lin, lin_pred,title):
     stats_data = df #[features_list].values
-    plt.figure(dpi=120)
+    plt.figure(dpi=150)
     all_cechy=np.dot(stats_data, lin.coef_.T)
     df_all=pd.DataFrame({'vectors':all_cechy.ravel(), 'Task':lin_pred})
 
