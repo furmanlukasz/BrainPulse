@@ -6,6 +6,7 @@ import scipy.io
 import numpy as np
 import os
 
+
 def eegbci_data(tmin, tmax, subject, filter_range = None):
 
     event_id = dict(ev=0)
@@ -147,3 +148,52 @@ def eegMCI_data_epochs(stim_type1,stim_type2, subject, run_type, path_to_data_fo
     epochs = [epochs_target1,epochs_target2]
     print(electrodes_l)
     return EpochsArray(evoked,info,tmin=-0.2), epochs
+
+
+def eegSCH_data(stim_type, subject, path, reref=False):
+    
+    """
+    eegSCH_data does read 3d data from .npy file.
+    
+    :param stim_type:  'sch','norm'
+    :param subject: select a subject from dataset
+    :param path_to_data_folder: root path to data folder containing 'norm' and 'sch' subfolders
+
+    :return: eeg data of the raw object (n_electrodes,n_samples), raw mne object
+    """
+
+    sf=128
+    ch_types='eeg'
+    ch_names=['F7','F3', 'F4','F8','T3','C3','Cz','C4','T4','T5','P3','Pz','P4','T6','O1','O2']
+     
+    subdir_norm=path+'\\'+'norm'
+    subdir_sch=path+'\\'+'sch'
+            
+    if stim_type=='norm':
+        idx=os.listdir(subdir_norm).index(subject+'.npy')
+        file=os.listdir(subdir_norm)[idx]
+        
+        filepath=subdir_norm+'\\'+file
+        data=np.load(filepath)
+        data=data*1e-06 #convert to volts
+        info = create_info(ch_names=ch_names, sfreq=sf, ch_types=ch_types)
+        info.set_montage('standard_1020')
+        raw = RawArray(data, info)
+        
+
+    if stim_type=='sch':
+        idx=os.listdir(subdir_sch).index(subject+'.npy')
+        file=os.listdir(subdir_sch)[idx]         
+        
+        filepath=subdir_sch+'\\'+file
+        data=np.load(filepath)
+        data=data*1e-06 ##convert to volts
+        info = create_info(ch_names=ch_names, sfreq=sf, ch_types=ch_types)
+        info.set_montage('standard_1020')
+        raw = RawArray(data, info)
+        
+
+    if reref==True:
+        raw=raw.copy().set_eeg_reference(ref_channels='average')
+
+    return raw.get_data(), raw
