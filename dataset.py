@@ -177,8 +177,9 @@ def eegSCH_data(stim_type, subject, path, reref=False):
         data=np.load(filepath)
         data=data*1e-06 #convert to volts
         info = create_info(ch_names=ch_names, sfreq=sf, ch_types=ch_types)
-        info.set_montage('standard_1020')
         raw = RawArray(data, info)
+        info.set_montage('standard_1020')
+        
         
 
     if stim_type=='sch':
@@ -189,8 +190,9 @@ def eegSCH_data(stim_type, subject, path, reref=False):
         data=np.load(filepath)
         data=data*1e-06 ##convert to volts
         info = create_info(ch_names=ch_names, sfreq=sf, ch_types=ch_types)
-        info.set_montage('standard_1020')
         raw = RawArray(data, info)
+        info.set_montage('standard_1020')
+        
         
 
     if reref==True:
