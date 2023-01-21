@@ -353,7 +353,7 @@ def umap_on_condition(df,y, title,labels_name,features_list=['TT', 'RR', 'DET', 
     X = pipe.fit_transform(stats_data.copy())
 
     # Fit UMAP to processed data
-    manifold = umap.UMAP(random_state=random_state, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit(X, y)
+    manifold = umap.UMAP(random_state=random_state, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit(X)
     # X_reduced_2 = manifold.transform(X)
     umap.plot.points(manifold, labels=labels_name, ax=ax1, color_key=np.array(
         [(0, 0.35, 0.73), (1, 0.83, 0)]))  # ,color_key=np.array([(1,0.83,0),(0,0.35,0.73)])
@@ -371,7 +371,7 @@ def umap_side_by_side_plot(df1, df2, features_list=['TT', 'RR', 'DET', 'LAM', 'L
     X = pipe.fit_transform(stats_data.copy())
 
     # Fit UMAP to processed data
-    manifold = umap.UMAP(random_state=random_state, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit(X, y)
+    manifold = umap.UMAP(random_state=random_state, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit(X)
     # X_reduced_2 = manifold.transform(X)
     umap.plot.points(manifold, labels=y, ax=ax1, color_key=np.array(
         [(0, 0.35, 0.73), (1, 0.83, 0)]))  # ,color_key=np.array([(1,0.83,0),(0,0.35,0.73)])
@@ -385,7 +385,7 @@ def umap_side_by_side_plot(df1, df2, features_list=['TT', 'RR', 'DET', 'LAM', 'L
     X = pipe.fit_transform(stats_data.copy())
 
     # Fit UMAP to processed data
-    manifold = umap.UMAP(random_state=random_state, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit(X, y)
+    manifold = umap.UMAP(random_state=random_state, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit(X)
     # X_reduced_2 = manifold.transform(X)
     umap.plot.points(manifold, labels=y, ax=ax2, color_key=np.array(
         [(0, 0.35, 0.73), (1, 0.83, 0)]))  # ,color_key=np.array([(1,0.83,0),(0,0.35,0.73)])
