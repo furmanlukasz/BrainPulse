@@ -1,7 +1,7 @@
 import time
 import torch
 
-def compute_stft(epoch_, n_fft, win_len, s_rate, cut_freq):
+def compute_stft(epoch_, n_fft, win_len, s_rate, freq_to_take):
     # stft_time = time.time()
 
     signal_tensor = torch.tensor(epoch_, dtype=torch.float)
@@ -9,7 +9,7 @@ def compute_stft(epoch_, n_fft, win_len, s_rate, cut_freq):
 
     sft = torch.abs(stft_tensor).numpy()
 
-    freq_to_take = (((n_fft/2)+1)*cut_freq) / ((s_rate/2)+1)
+    freq_to_take = (((n_fft/2)+1)*freq_to_take) / ((s_rate/2)+1)
 
     sft = sft[:int(freq_to_take),::]
 
