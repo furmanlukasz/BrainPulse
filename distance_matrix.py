@@ -11,7 +11,19 @@ from pyrqa.metric import EuclideanMetric
 from pyrqa.neighbourhood import Unthresholded
 import torch
 
+@jit(nopython=True)
+def euclidean_distance(x, y):
+    return np.linalg.norm(x - y)
 
+@jit(nopython=True)
+def euclidean_distance_matrix(stft_):
+    result = np.zeros((stft_.shape[0], stft_.shape[0]))
+
+    for i, fft in enumerate(stft_):
+        for j, v in enumerate(stft_):
+            d = euclidean_distance(fft, v)
+            result[i, j] = d
+    return result
 #
 # @jit(parallel=True)
 @jit(nopython=True)
